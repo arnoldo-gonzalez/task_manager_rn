@@ -157,14 +157,16 @@ const CreateTaskScreen = ({navigation}) => {
               if (Platform.OS === 'android') {
                 const currentDate = targetDate ? new Date(targetDate) : new Date();
                 try {
-                  const dateResult = await DateTimePickerAndroid.open({
+                  DateTimePickerAndroid.open({
                     value: currentDate,
                     mode: 'date',
                     is24Hour: true,
+                    onChange: (event, selectedDate) => {
+
+                      setTargetDate(formatDate(selectedDate));
+
+                    }
                   });
-                  if (dateResult.action === DateTimePickerAndroid.dateSetAction) {
-                    setTargetDate(formatDate(dateResult.date));
-                  }
                 } catch (error) {
                   console.log('DateTimePicker error:', error);
                 }
@@ -206,14 +208,16 @@ const CreateTaskScreen = ({navigation}) => {
               if (Platform.OS === 'android') {
                 const currentDate = targetTime ? new Date(`2000-01-01 ${targetTime}`) : new Date();
                 try {
-                  const timeResult = await DateTimePickerAndroid.open({
+                  DateTimePickerAndroid.open({
                     value: currentDate,
                     mode: 'time',
                     is24Hour: true,
+                    onChange: (event, selectedDate) => {
+
+                      setTargetTime(formatTime(selectedDate));
+
+                    }
                   });
-                  if (timeResult.action === DateTimePickerAndroid.timeSetAction) {
-                    setTargetTime(formatTime(timeResult.date));
-                  }
                 } catch (error) {
                   console.log('DateTimePicker error:', error);
                 }

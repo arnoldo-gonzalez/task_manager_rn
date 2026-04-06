@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   View,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import {useAuth} from '../../context/AuthContext';
 
@@ -15,12 +17,24 @@ const LoginScreen = ({navigation}) => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isValid, setIsValid] = useState(true);
+
+  const handleChangeEmail = (txt) => {
+    setEmail(txt);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    setIsValid(emailRegex.test(txt));
+  }
 
   const {login} = useAuth();
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
       setError('Please fill in all fields');
+      return;
+    }
+
+    if (!isValid) {
+      setError('Please enter a valid email');
       return;
     }
 
@@ -38,6 +52,10 @@ const LoginScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+        style={{ flex: 1 }}
+      >
       <View style={styles.content}>
         <Text style={styles.title}>Sign In</Text>
 
@@ -48,11 +66,17 @@ const LoginScreen = ({navigation}) => {
           placeholder="Email"
           placeholderTextColor="#666"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={handleChangeEmail}
           keyboardType="email-address"
           autoCapitalize="none"
           autoCorrect={false}
         />
+
+        {!isValid && (
+          <Text style={styles.errorText}>
+            Ingresa un correo electrónico válido.
+          </Text>
+        )}
 
         <TextInput
           style={styles.input}
@@ -80,6 +104,7 @@ const LoginScreen = ({navigation}) => {
           </Text>
         </TouchableOpacity>
       </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

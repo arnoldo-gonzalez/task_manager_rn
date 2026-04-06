@@ -1,5 +1,8 @@
 import React, {useState} from 'react';
 import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -18,6 +21,13 @@ const RegisterScreen = ({navigation}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isValid, setIsValid] = useState(true);
+  
+  const handleChangeEmail = (txt) => {
+    setEmail(txt);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    setIsValid(emailRegex.test(txt));
+  }
 
   const {register} = useAuth();
 
@@ -36,6 +46,12 @@ const RegisterScreen = ({navigation}) => {
       setError('Password must be at least 6 characters');
       return;
     }
+
+    if (!isValid) {
+      setError('Please enter a valid email');
+      return;
+    }
+    console.log("aca")
 
     setError('');
     setSuccess('');
@@ -57,7 +73,12 @@ const RegisterScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
+      <KeyboardAvoidingView
+        keyboardVerticalOffset={100}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+        style={{ flex: 1 }}
+      >
+      <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
         <Text style={styles.title}>Sign Up</Text>
 
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
@@ -87,11 +108,17 @@ const RegisterScreen = ({navigation}) => {
           placeholder="Email"
           placeholderTextColor="#666"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={handleChangeEmail}
           keyboardType="email-address"
           autoCapitalize="none"
           autoCorrect={false}
         />
+
+        {!isValid && (
+          <Text style={styles.errorText}>
+            Ingresa un correo electrónico válido.
+          </Text>
+        )}
 
         <TextInput
           style={styles.input}
@@ -127,7 +154,8 @@ const RegisterScreen = ({navigation}) => {
             Already have an account? Sign In
           </Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -140,6 +168,8 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 20,
+  },
+  scrollContent: {
     justifyContent: 'center',
   },
   title: {
